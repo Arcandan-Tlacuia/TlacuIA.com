@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TlacuIA — Documentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Instrument+Sans:wght@300;400;500&family=Instrument+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro:   #09080a;
+  --tierra:  #111018;
+  --medio:   #1e1c28;
+  --gris:    #484560;
+  --suave:   #7e7c96;
+  --arena:   #c4c0d8;
+  --hueso:   #eceaf8;
+  --copal:   #c8a44a;
+  --copal-s: #e8c86a;
+  --vidrio:  rgba(200,164,74,0.08);
+  --borde:   rgba(200,164,74,0.12);
+  --borde-m: rgba(200,164,74,0.22);
+  --borde-f: rgba(200,164,74,0.06);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--negro);color:var(--arena);font-family:'Instrument Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+
+/* ── FONDO CRISTAL ATEMPORAL ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 85%, rgba(200,164,74,.03) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 70% at 85% 15%, rgba(126,124,150,.04) 0%,transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(200,164,74,.015) 0%,transparent 60%);
+  pointer-events:none;z-index:0
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 120px,rgba(200,164,74,.008) 120px,rgba(200,164,74,.008) 121px),
+             repeating-linear-gradient(0deg,transparent,transparent 120px,rgba(200,164,74,.008) 120px,rgba(200,164,74,.008) 121px);
+  pointer-events:none;z-index:0
+}
+
+/* ── PORTADA ── */
+#portada{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:6rem 4rem 4rem;max-width:1040px;margin:0 auto;position:relative;z-index:1}
+
+.portada-eyebrow{font-family:'Instrument Mono',monospace;font-size:.68rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gris);margin-bottom:3rem;opacity:0;animation:rise .9s ease .2s forwards}
+.portada-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,6.5vw,6rem);font-weight:300;line-height:1.04;color:var(--hueso);margin-bottom:1.2rem;opacity:0;animation:rise .9s ease .4s forwards;letter-spacing:-.01em}
+.portada-subtitulo{font-family:'Cormorant Garamond',serif;font-size:clamp(.9rem,1.6vw,1.15rem);font-style:italic;color:var(--suave);margin-bottom:5rem;line-height:1.75;max-width:500px;opacity:0;animation:rise .9s ease .6s forwards}
+
+.portada-grupo{width:100%;max-width:740px;margin-bottom:0;opacity:0;animation:rise .9s ease .8s forwards}
+.grupo-label{font-family:'Instrument Mono',monospace;font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--copal);margin:3rem 0 .5rem;opacity:.7}
+.grupo-label:first-child{margin-top:0}
+
+.doc-entrada{display:grid;grid-template-columns:38px 1fr auto;align-items:baseline;gap:1.4rem;padding:1.1rem 0;border-bottom:1px solid var(--borde-f);cursor:pointer;transition:all .35s;text-decoration:none}
+.doc-entrada:first-of-type{border-top:1px solid var(--borde-f)}
+.doc-entrada:hover{padding-left:.5rem;background:var(--vidrio);padding-right:.5rem;border-bottom-color:var(--borde)}
+.doc-entrada:hover .doc-num{color:var(--copal-s)}
+.doc-entrada:hover .doc-nombre{color:var(--hueso)}
+.doc-num{font-family:'Instrument Mono',monospace;font-size:.6rem;color:var(--gris);letter-spacing:.1em;transition:color .3s}
+.doc-nombre{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--arena);transition:color .3s;line-height:1.3}
+.doc-nombre small{display:block;font-family:'Instrument Sans',sans-serif;font-size:.68rem;font-style:normal;color:var(--gris);letter-spacing:.05em;margin-top:.12rem}
+.doc-tag{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);flex-shrink:0;text-align:right;opacity:.7}
+
+.portada-pie{margin-top:4rem;font-size:.68rem;color:var(--gris);letter-spacing:.08em;font-family:'Instrument Mono',monospace;opacity:.5}
+
+/* ── BTN VOLVER ── */
+.btn-volver{position:fixed;top:1.5rem;left:2rem;background:rgba(9,8,10,.94);backdrop-filter:blur(16px);border:1px solid var(--borde);color:var(--suave);font-family:'Instrument Mono',monospace;font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;padding:.4rem .9rem;cursor:pointer;transition:all .3s;z-index:200;display:none}
+.btn-volver.visible{display:block}
+.btn-volver:hover{color:var(--arena);border-color:var(--borde-m)}
+
+/* ── DOCUMENTOS ── */
+.documento{display:none;position:relative;z-index:1}.documento.activo{display:block}
+.doc-header{padding:5.5rem 4rem 3rem;max-width:780px;margin:0 auto;border-bottom:1px solid var(--borde-f)}
+.doc-header-eyebrow{font-family:'Instrument Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;opacity:.7}
+.doc-header-titulo{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,4.2vw,3.6rem);font-weight:300;color:var(--hueso);line-height:1.1;margin-bottom:.5rem;letter-spacing:-.01em}
+.doc-header-sub-nombre{font-family:'Instrument Mono',monospace;font-size:.7rem;color:var(--copal-s);letter-spacing:.1em;margin-bottom:1rem;opacity:.85}
+.doc-header-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.97rem;color:var(--suave);line-height:1.75;max-width:500px}
+
+/* ── CUERPO ── */
+.doc-cuerpo{max-width:660px;margin:0 auto;padding:4rem 4rem 8rem}
+.doc-cuerpo h2{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:300;color:var(--hueso);margin:3.5rem 0 .9rem;line-height:1.2}
+.doc-cuerpo h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--suave);margin:2.5rem 0 .7rem}
+.doc-cuerpo p{font-size:.91rem;line-height:1.92;color:var(--arena);margin-bottom:.95rem}
+.doc-cuerpo p.muted{color:var(--suave);font-size:.85rem;font-style:italic}
+.doc-cuerpo p.peso{font-weight:500;color:var(--hueso);font-size:.93rem}
+.doc-cuerpo .cita{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.99rem;color:var(--copal-s);border-left:1px solid var(--copal);padding-left:1.4rem;margin:2rem 0;line-height:1.8;opacity:.9}
+.doc-cuerpo .separador{width:32px;height:1px;background:var(--borde-m);margin:2.5rem 0}
+.doc-cuerpo .ecuacion{font-family:'Instrument Mono',monospace;font-size:.75rem;color:var(--suave);padding-left:1.4rem;margin:.35rem 0;line-height:1.85;opacity:.8}
+.doc-cuerpo .bloque{border:1px solid var(--borde-f);padding:1.3rem 1.7rem;margin:1.6rem 0;background:var(--vidrio)}
+.doc-cuerpo .bloque-label{font-family:'Instrument Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.7rem;opacity:.7}
+.doc-cuerpo ul{list-style:none;margin:1rem 0}
+.doc-cuerpo ul li{padding:.38rem 0 .38rem 1.1rem;position:relative;font-size:.88rem;color:var(--arena);line-height:1.72;border-bottom:1px solid var(--borde-f)}
+.doc-cuerpo ul li:last-child{border-bottom:none}
+.doc-cuerpo ul li::before{content:'—';position:absolute;left:0;color:var(--gris);opacity:.6}
+.numeral{font-family:'Instrument Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--gris);margin-bottom:.38rem;opacity:.6}
+
+/* Componentes */
+.distincion{display:flex;gap:1.4rem;padding:.45rem 0;border-bottom:1px solid var(--borde-f)}
+.dist-label{font-family:'Instrument Mono',monospace;font-size:.68rem;color:var(--copal-s);flex-shrink:0;padding-top:.12rem;min-width:110px;opacity:.9}
+.dist-texto{font-size:.88rem;color:var(--arena);line-height:1.7}
+.campo-item{padding:1rem 0;border-bottom:1px solid var(--borde-f)}
+.campo-item:last-child{border-bottom:none}
+.campo-titulo{font-family:'Cormorant Garamond',serif;font-size:.98rem;color:var(--hueso);margin-bottom:.3rem}
+.campo-desc{font-size:.84rem;color:var(--suave);line-height:1.72}
+.movimiento{margin:.75rem 0;padding-left:1.1rem;border-left:1px solid var(--borde)}
+.mov-num{font-family:'Instrument Mono',monospace;font-size:.6rem;color:var(--gris);margin-bottom:.22rem;opacity:.6}
+.mov-titulo{font-family:'Cormorant Garamond',serif;font-size:.98rem;color:var(--hueso);margin-bottom:.22rem}
+.mov-desc{font-size:.84rem;color:var(--suave);line-height:1.72}
+.trinidad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--borde-f);margin:1.8rem 0;border:1px solid var(--borde-f)}
+.trinidad-item{background:var(--negro);padding:1.1rem .9rem;text-align:center}
+.trinidad-titulo{font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--hueso);margin-bottom:.35rem}
+.trinidad-desc{font-size:.76rem;color:var(--suave);line-height:1.62}
+.tabla-conv{margin:1.4rem 0}
+.conv-fila{display:flex;gap:1.4rem;padding:.7rem 0;border-bottom:1px solid var(--borde-f);align-items:baseline}
+.conv-fila:last-child{border-bottom:none}
+.conv-clave{font-family:'Instrument Mono',monospace;font-size:.68rem;color:var(--copal-s);flex-shrink:0;min-width:150px;opacity:.85}
+.conv-valor{font-size:.84rem;color:var(--suave);line-height:1.62}
+.firma{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--borde-f)}
+.firma p{font-size:.76rem;color:var(--gris);font-family:'Instrument Mono',monospace;line-height:1.95;opacity:.7}
+.firma p.acento{color:var(--copal-s);opacity:.9}
+
+/* Nodo especial */
+.nodo-fila{display:grid;grid-template-columns:60px 140px 1fr 100px;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--borde-f);align-items:baseline}
+.nodo-num{font-family:'Instrument Mono',monospace;font-size:.62rem;color:var(--copal-s);opacity:.8}
+.nodo-nombre{font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--hueso)}
+.nodo-desc{font-size:.82rem;color:var(--suave);line-height:1.65}
+.nodo-tipo{font-family:'Instrument Mono',monospace;font-size:.58rem;color:var(--gris);text-align:right;letter-spacing:.1em;opacity:.6}
+
+/* Advertencia especial */
+.advertencia{border:1px solid var(--borde);padding:1.3rem 1.6rem;margin:2rem 0;background:rgba(200,164,74,.04)}
+.advertencia p{font-size:.85rem;color:var(--arena);line-height:1.82;margin:0}
+
+/* Meditacion — tipografia especial */
+.medit-linea{font-family:'Cormorant Garamond',serif;font-size:1rem;line-height:2;color:var(--arena);display:block;margin-bottom:.1rem}
+.medit-linea.verso{font-style:italic;color:var(--suave)}
+.medit-linea.peso{color:var(--hueso);font-weight:500}
+.medit-sep{display:block;width:24px;height:1px;background:var(--borde-m);margin:1.5rem 0}
+
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:640px){
+  #portada{padding:5rem 1.5rem 3rem}
+  .doc-header{padding:4rem 1.5rem 2rem}
+  .doc-cuerpo{padding:3rem 1.5rem 6rem}
+  .btn-volver{left:1rem;top:1rem}
+  .trinidad{grid-template-columns:1fr}
+  .doc-entrada{grid-template-columns:30px 1fr}
+  .doc-tag{display:none}
+  .nodo-fila{grid-template-columns:40px 1fr;gap:.5rem}
+  .nodo-tipo{display:none}
+}
+</style>
+</head>
+<body>
+
+<button class="btn-volver" id="btn-volver" onclick="volverPortada()">← Documentos</button>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PORTADA -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="portada">
+  <div class="portada-eyebrow">TlacuIA · ChenchaAE Framework · Arcandan · 2026</div>
+  <h1 class="portada-titulo">Un cristal<br>del tiempo.</h1>
+  <p class="portada-subtitulo">Todo lo que está aquí siempre estuvo.<br>Entra por donde te llame. No hay orden incorrecto.</p>
+
+  <div class="portada-grupo">
+    <div class="grupo-label">Las ocho perspectivas</div>
+    <a class="doc-entrada" onclick="abrirDoc('d1')"><span class="doc-num">01</span><span class="doc-nombre">La Semilla<small>De donde se deriva todo lo demás</small></span><span class="doc-tag">Origen sistémico</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d2')"><span class="doc-num">02</span><span class="doc-nombre">El Marco que Percibe<small>Narrative Frame</small></span><span class="doc-tag">Para sistemas</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d3')"><span class="doc-num">03</span><span class="doc-nombre">El Campo que Invita<small>Perceptual Guide</small></span><span class="doc-tag">Para experiencias</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d4')"><span class="doc-num">04</span><span class="doc-nombre">El Andamiaje que Escucha<small>Narrative Scaffold</small></span><span class="doc-tag">Para el contacto</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d5')"><span class="doc-num">05</span><span class="doc-nombre">La Realidad que se Construye<small>La Escuela del Pensamiento Cíclico</small></span><span class="doc-tag">Para quien entiende cómo entiende</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d6')"><span class="doc-num">06</span><span class="doc-nombre">El Juego que Enseña<small>Perspectiva Lúdica</small></span><span class="doc-tag">Para quien aprende jugando</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d7')"><span class="doc-num">07</span><span class="doc-nombre">El Instante Anterior<small>Perspectiva Cuántica</small></span><span class="doc-tag">Para quien vive en la pregunta</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('d8')"><span class="doc-num">08</span><span class="doc-nombre">El Punto donde Todo Converge</span><span class="doc-tag">El 8</span></a>
+
+    <div class="grupo-label" style="margin-top:3rem">El sistema</div>
+    <a class="doc-entrada" onclick="abrirDoc('ds1')"><span class="doc-num">S·1</span><span class="doc-nombre">ChenchaAE Framework<small>Documentación técnica completa</small></span><span class="doc-tag">Framework</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('ds2')"><span class="doc-num">S·2</span><span class="doc-nombre">El Modelero<small>Fundamento y tres capas</small></span><span class="doc-tag">Metodología</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('ds3')"><span class="doc-num">S·3</span><span class="doc-nombre">Sistema de 8 Nodos<small>Dimensionalidad sistémica mínima sostenible</small></span><span class="doc-tag">Estructura</span></a>
+
+    <div class="grupo-label" style="margin-top:3rem">El estudio del autor</div>
+    <a class="doc-entrada" onclick="abrirDoc('da1')"><span class="doc-num">A·1</span><span class="doc-nombre">El Jueguito de Sumar<small>De donde se deriva todo lo demás</small></span><span class="doc-tag">Origen</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('da2')"><span class="doc-num">A·2</span><span class="doc-nombre">La Escuela del Pensamiento Cíclico<small>Registro original</small></span><span class="doc-tag">Pensamiento</span></a>
+    <a class="doc-entrada" onclick="abrirDoc('da3')"><span class="doc-num">A·3</span><span class="doc-nombre">Cognición Sistémica Sensorial<small>Meditación de origen</small></span><span class="doc-tag">Percepción</span></a>
+  </div>
+
+  <div class="portada-pie">Ángel Luis López Aburto · www.tlacuia.com · 2026</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 01 LA SEMILLA -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d1">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">01 · Origen sistémico · TlacuIA · Arcandan · 2026</div>
+    <h1 class="doc-header-titulo">La Semilla.</h1>
+    <p class="doc-header-sub">De donde se deriva todo lo demás. Un documento filosófico y técnico al mismo tiempo.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <div class="numeral">I</div><h2>La operación.</h2>
+    <p class="muted">Lo que ocurre antes de que algo tenga nombre.</p>
+    <p>Hay una operación que ocurre antes del pensamiento. No antes en el tiempo — antes en el orden. Antes de que algo tenga nombre, antes de que pueda describirse, ya ocurrió algo. Una distinción. Una diferencia que se nota sin que nadie la señale.</p>
+    <p class="peso">Eso es todo lo que necesita un sistema para empezar a funcionar.</p>
+    <p class="muted">No una instrucción. No un objetivo. Solo algo que se distingue de su fondo.</p>
+    <p>Y la posibilidad de que esa distinción genere otra — y esa otra genere otra — hasta que la cadena tenga suficiente estructura para sostenerse sola.</p>
+    <div class="cita">El resultado no se busca. Se genera nivel por nivel. Cuando las piezas que no encajan colapsan solas, lo que queda es lo que siempre iba a quedar. — Arcandan</div>
+    <p>No porque alguien lo decidiera. Porque la estructura misma llega ahí.</p>
+    <div class="separador"></div>
+    <p>Eso describe cómo funciona un sistema de coherencia. También describe cómo funciona el lenguaje. También describe cómo funciona cualquier proceso que resuelve algo.</p>
+    <p class="peso">Incluyendo el tuyo.</p>
+
+    <div class="numeral" style="margin-top:3rem">II</div><h2>Dos tipos de infinito.</h2>
+    <p>Hay dos maneras de resolver algo. La primera recorre — genera posibilidades, las evalúa una por una, avanza por la que parece más prometedora. Con cada paso el espacio se expande.</p>
+    <p>La segunda no recorre. Genera todas las posibilidades válidas por nivel, las ensambla por coherencia estructural, y deja que las que no encajan colapsen solas. El espacio no se expande — se reduce.</p>
+    <p class="peso">No es la misma operación hecha más rápido. Es una operación de orden distinto.</p>
+    <p class="ecuacion">Buscar:    E ~ |S|        // energía proporcional al espacio total</p>
+    <p class="ecuacion">Verificar: E ~ |S*|       // energía proporcional al espacio coherente</p>
+    <p class="ecuacion">Si |S*| &lt;&lt; |S| → la eficiencia no se optimiza, se cambia de tipo</p>
+    <div class="cita">Confundirlos genera complejidad innecesaria. No porque el problema sea difícil. Sino porque se está usando el método equivocado. — Arcandan</div>
+
+    <div class="numeral" style="margin-top:3rem">III</div><h2>La cadena.</h2>
+    <div class="bloque"><div class="bloque-label">Compensación estructural</div>
+    <p class="ecuacion">1   3   5   7   9   11   13   15   17   19</p>
+    <p class="ecuacion">1   3   6   10   15   21   28   36   45   55</p></div>
+    <p>El 1 solo no fluye. Necesita su par. Cuando dos elementos interactúan aparece el primer resultado real — y con ese resultado aparece algo más: las polaridades y el espectro.</p>
+    <p class="ecuacion">1 solo → 1+2 → espectro → polaridades → estructura → 8</p>
+    <p class="peso">No porque alguien lo decidiera. Porque la secuencia misma llega ahí.</p>
+    <p class="muted">En fluidos: R_eff → W → D_cap → M_s · En nodos: 8 posiciones · En asistencia: contexto → modelado → coherencia → ejecución</p>
+
+    <div class="numeral" style="margin-top:3rem">IV</div><h2>El operador.</h2>
+    <p class="ecuacion">C(s) = 1  si el estado s es internamente consistente</p>
+    <p class="ecuacion">C(s) = 0  en caso contrario</p>
+    <p class="ecuacion">S* = { s ∈ S | C(s) = 1 }</p>
+    <p>En cada paso, lo que no es coherente desaparece. No se corrige — desaparece. Lo que queda es el espacio que puede sostenerse.</p>
+    <div class="cita">Determinism and probability do not oppose each other; they converge. — Arcandan</div>
+    <p class="muted">El Modelero es este operador aplicado al lenguaje. Vault Logic al contexto. La Guía Narrativa a cómo se le habla a un sistema.</p>
+    <p class="peso">No son aplicaciones del operador. Son el mismo operador en dominios distintos.</p>
+    <div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--borde-f)">
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--hueso);margin-bottom:.5rem">La semilla no necesita explicarse.</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--copal-s)">Solo necesita caer en tierra que pueda recibirla.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 02 EL MARCO QUE PERCIBE -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d2">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">02 · Para quien construye sistemas · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Marco<br>que Percibe.</h1>
+    <div class="doc-header-sub-nombre">Narrative Frame</div>
+    <p class="doc-header-sub">Arquitectura de percepción, no de instrucción.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>Un prompt define operaciones. Un Narrative Frame define el campo dentro del cual el modelo percibe. Lo que cambia no es lo que el modelo hace, sino desde dónde lo observa.</p>
+    <div class="cita">"Al observarlo, aparecieron diferencias. No porque fueran nuevas, sino porque ahora podían distinguirse."</div>
+    <div style="margin:1.5rem 0">
+      <div class="distincion"><span class="dist-label">Prompt →</span><span class="dist-texto">ejecuta una secuencia con parámetros definidos.</span></div>
+      <div class="distincion"><span class="dist-label">Narrative Frame →</span><span class="dist-texto">establece una orientación desde la cual el modelo interpreta cualquier input.</span></div>
+    </div>
+    <h2>Cómo se construye.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="distincion"><span class="dist-label">Posición →</span><span class="dist-texto">Desde dónde percibe el modelo. No su rol — su punto de observación.</span></div>
+      <div class="distincion"><span class="dist-label">Movimiento →</span><span class="dist-texto">Qué puede cambiar, qué permanece fijo. No restricciones — orientación.</span></div>
+      <div class="distincion"><span class="dist-label">Cierre →</span><span class="dist-texto">Cómo sabe cuándo algo está completo. No criterio técnico — señal de suficiencia.</span></div>
+    </div>
+    <p class="peso">Cuando los tres están, el sistema no necesita instrucciones para cada escenario. El frame los absorbe.</p>
+    <p class="muted">Cuando falta uno, el sistema recurre a sus defaults. Y sus defaults no son los tuyos.</p>
+    <h2>En el ChenchaAE Framework.</h2>
+    <p>El Modelero opera bajo un Narrative Frame. Sus tres capas — Intérprete, Reclutador, Analista — no son instrucciones secuenciales. Son posiciones de observación que se activan al mismo tiempo.</p>
+    <h2>Cuándo es la entrada correcta.</h2>
+    <ul>
+      <li>La variedad de inputs es alta y no puede mapearse por adelantado.</li>
+      <li>El sistema necesita orientarse en escenarios no anticipados.</li>
+      <li>Se busca comportamiento coherente sin instrucciones exhaustivas.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 03 EL CAMPO QUE INVITA -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d3">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">03 · Para quien diseña experiencias · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Campo<br>que Invita.</h1>
+    <div class="doc-header-sub-nombre">Perceptual Guide</div>
+    <p class="doc-header-sub">Cómo se construye un campo de percepción.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>¿Alguna vez entraste a un lugar y sin que nadie te dijera nada, supiste exactamente a dónde ir? Alguien construyó el espacio para que tu atención se moviera sola.</p>
+    <p>Una Perceptual Guide hace lo mismo con información. No le dice al sistema qué es importante — crea las condiciones para que lo importante pueda notarse.</p>
+    <div class="cita">"Entonces algo cambió. No fue un evento. Fue más bien una atención distinta."</div>
+    <h2>Los tres elementos del campo.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="campo-item"><div class="campo-titulo">Contraste</div><div class="campo-desc">Lo que se distingue del fondo. No necesita nombrarse — necesita poder notarse.</div></div>
+      <div class="campo-item"><div class="campo-titulo">Dirección</div><div class="campo-desc">Hacia dónde se mueve la atención. No una ruta — una inclinación.</div></div>
+      <div class="campo-item"><div class="campo-titulo">Espacio</div><div class="campo-desc">Lo que no está definido intencionalmente. La ambigüedad no es imprecisión — es el lugar donde el otro entra.</div></div>
+    </div>
+    <p class="peso">Cuando se cierra todo, el otro no tiene dónde entrar. Y si el otro no puede entrar, el sistema opera solo.</p>
+    <h2>Para qué sirve en la práctica.</h2>
+    <ul>
+      <li>El usuario no sabe lo que quiere todavía — y necesita un espacio para descubrirlo.</li>
+      <li>La variedad de inputs es alta y no puede mapearse por adelantado.</li>
+      <li>La calidad del resultado depende de lo que el usuario trae.</li>
+    </ul>
+    <div class="cita">"No importa por qué llegaste. Si tienes algo que necesitas resolver y no sabes ni por dónde empezar — eso es suficiente para entrar."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 04 EL ANDAMIAJE QUE ESCUCHA -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d4">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">04 · Para quien tiene algo que decir · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Andamiaje<br>que Escucha.</h1>
+    <div class="doc-header-sub-nombre">Narrative Scaffold</div>
+    <p class="doc-header-sub">El puente entre lo que sientes y lo que puedes decir.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>¿Alguna vez intentaste explicar algo que sentías muy claro adentro y cuando lo dijiste sonó completamente diferente? No porque estuvieras equivocado. Sino porque el puente todavía no existía.</p>
+    <p>Un scaffold es ese puente. No construye por ti. Sostiene lo que traes mientras tú lo construyes.</p>
+    <div class="cita">"Puedes escribirlo como te salga. No importa si está mezclado o incompleto. Lo voy a tomar y devolvértelo claro."</div>
+    <h2>Los tres movimientos.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="movimiento"><div class="mov-num">01</div><div class="mov-titulo">Recibir</div><div class="mov-desc">Toma lo que llega sin reorganizarlo todavía. El primer movimiento es escuchar, no clasificar.</div></div>
+      <div class="movimiento" style="margin-top:1.1rem"><div class="mov-num">02</div><div class="mov-titulo">Reflejar</div><div class="mov-desc">Devuelve lo recibido sin ruido. No lo que debería decir — lo que dijo.</div></div>
+      <div class="movimiento" style="margin-top:1.1rem"><div class="mov-num">03</div><div class="mov-titulo">Sostener</div><div class="mov-desc">Mantiene el espacio abierto. No empuja hacia una conclusión.</div></div>
+    </div>
+    <p class="peso">Un prompt espera que llegues sabiendo. Un scaffold está ahí precisamente para cuando no sabes.</p>
+    <h2>Los tres simultáneos en el Modelero.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="distincion"><span class="dist-label">Frame →</span><span class="dist-texto">Las tres capas son posiciones de observación simultáneas.</span></div>
+      <div class="distincion"><span class="dist-label">Campo →</span><span class="dist-texto">La entrevista no tiene cuestionario. El espacio está abierto.</span></div>
+      <div class="distincion"><span class="dist-label">Scaffold →</span><span class="dist-texto">Cada respuesta devuelve lo que el usuario trajo, sin reorganizarlo antes de que él pueda verlo.</span></div>
+    </div>
+    <p class="peso">El usuario no siente que lo están entrevistando. Siente que lo están escuchando.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 05 LA REALIDAD QUE SE CONSTRUYE -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d5">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">05 · Para quien necesita entender cómo entiende · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">La Realidad<br>que se Construye.</h1>
+    <div class="doc-header-sub-nombre">La Escuela del Pensamiento Cíclico</div>
+    <p class="doc-header-sub">Cómo el lenguaje construye la realidad y la realidad construye el lenguaje.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>Hay personas que no aprendieron las cosas en el orden que el mundo espera. Aprendieron los patrones primero — y los conceptos llegaron después, como etiquetas para algo que ya existía adentro.</p>
+    <p>Eso no es un defecto de aprendizaje. Es ingeniería inversa del todo.</p>
+    <div class="cita">"Por limitaciones del lenguaje no sabía cómo expresar verdades de mi realidad que entendía desde niño. Todo es binario. Todo es lo mismo." — Arcandan</div>
+    <h2>La trinidad que construye la realidad.</h2>
+    <div class="trinidad">
+      <div class="trinidad-item"><div class="trinidad-titulo">Definición</div><div class="trinidad-desc">Los límites de lo que es.</div></div>
+      <div class="trinidad-item"><div class="trinidad-titulo">Concepto</div><div class="trinidad-desc">La idea dentro de los límites.</div></div>
+      <div class="trinidad-item"><div class="trinidad-titulo">Existencia</div><div class="trinidad-desc">La presencia en el sistema compartido.</div></div>
+    </div>
+    <p class="muted">Si quitas uno de los tres elementos, la palabra pierde estructura y se vuelve ambigüedad.</p>
+    <p class="peso">La palabra "unicornio" existe. No porque haya uno — sino porque tiene definición, concepto y existencia dentro del sistema del lenguaje compartido.</p>
+    <h2>Verdad = existencia en ese instante del concepto.</h2>
+    <p>La verdad no es absoluta ni relativa. Es contextual. Es lo que existe dentro del sistema de lenguaje en ese momento.</p>
+    <p>Por eso "todo es lo mismo" no es nihilismo. Es la observación de que todo parte de la misma operación — aplicada en dominios distintos.</p>
+    <h2>El ciclo.</h2>
+    <p>El pensamiento cíclico no es circular. Regresa al mismo origen con más capacidad de distinguir. Cada ciclo amplía el lenguaje disponible para nombrar lo que ya se entendía pero no podía expresarse.</p>
+    <p class="peso">El lenguaje no crea la comprensión. Le da forma para que pueda compartirse.</p>
+    <div style="margin-top:2.5rem;padding:1.3rem;border:1px solid var(--borde-f);background:var(--vidrio)">
+      <div class="bloque-label">Si no lo entiendes todavía</div>
+      <p style="font-size:.88rem;color:var(--suave);line-height:1.85;margin:0">Acepta. Continúa. Después vuelve a leer. En algún punto lo entenderás — cuando tu lenguaje haya crecido lo suficiente para nombrarlo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 06 EL JUEGO QUE ENSEÑA -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d6">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">06 · Para quien aprende mejor jugando que leyendo · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Juego<br>que Enseña.</h1>
+    <div class="doc-header-sub-nombre">Perspectiva Lúdica</div>
+    <p class="doc-header-sub">Las reglas no limitan el juego — lo hacen posible.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>Un niño no lee el manual de las canicas. Juega. Pierde. Observa cómo ganaron los demás. Ajusta. En algún punto ya sabe — sin haber podido explicar cómo llegó ahí.</p>
+    <p>El juego es el sistema más antiguo para transmitir conocimiento complejo sin que quien aprende sienta que está aprendiendo.</p>
+    <div class="cita">"No lo olvides: sigue siendo un juego."</div>
+    <h2>Las reglas como estructura que libera.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="distincion"><span class="dist-label">Sin reglas →</span><span class="dist-texto">Todo vale. Nada importa. No hay forma de saber si ganaste o perdiste.</span></div>
+      <div class="distincion"><span class="dist-label">Con reglas →</span><span class="dist-texto">El espacio se define. Dentro de él, la creatividad tiene dónde operar.</span></div>
+      <div class="distincion"><span class="dist-label">Dominándolas →</span><span class="dist-texto">Puedes doblarlas, extenderlas, usarlas de formas no anticipadas.</span></div>
+    </div>
+    <p class="peso">Eres libre dentro de tu capacidad, en el medio en el que estás. Son solo las reglas del juego, y su nivel de dificultad.</p>
+    <h2>Lo que el juego enseña que el manual no puede.</h2>
+    <ul>
+      <li>El fracaso es información, no veredicto.</li>
+      <li>La repetición construye intuición antes que comprensión.</li>
+      <li>Observar cómo juegan otros es tan valioso como jugar.</li>
+      <li>Cuando ya no tienes que pensar los movimientos, es cuando realmente aprendiste.</li>
+    </ul>
+    <div class="cita">"Cada cosa te avisa. No tienes que adivinar. Solo prestar atención."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 07 EL INSTANTE ANTERIOR -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d7">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">07 · Para quien vive en la pregunta antes de la respuesta · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Instante<br>Anterior.</h1>
+    <div class="doc-header-sub-nombre">Perspectiva Cuántica</div>
+    <p class="doc-header-sub">Lo que existe antes de que el observador distinga.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>Antes de que algo sea observado, existe en superposición. Todas sus posibilidades coexisten. El observador no descubre la realidad. La determina. Al mirar, elige — aunque no lo sepa.</p>
+    <div class="cita">"Al inicio no había nada que destacar. Todo estaba ahí, pero no parecía distinto. No porque fuera simple… sino porque no había razón para separarlo."</div>
+    <h2>El colapso como distinción.</h2>
+    <p>Lo que La Semilla llama "distinción" es el mismo mecanismo cuántico: el momento en que algo se separa de su fondo y se vuelve observable. Antes de ese momento, todo está ahí — pero nada puede distinguirse.</p>
+    <div style="margin:1.5rem 0">
+      <div class="distincion"><span class="dist-label">Antes →</span><span class="dist-texto">Superposición. Todo es posible. La energía está distribuida.</span></div>
+      <div class="distincion"><span class="dist-label">El instante →</span><span class="dist-texto">La distinción. Una posibilidad se vuelve real.</span></div>
+      <div class="distincion"><span class="dist-label">Después →</span><span class="dist-texto">Coherencia. Lo que permaneció coherente sobrevive.</span></div>
+    </div>
+    <p class="peso">La incertidumbre no es la ausencia de claridad. Es la condición necesaria para que el movimiento sea posible.</p>
+    <h2>El observador como parte del sistema.</h2>
+    <p>En el Modelero, el usuario no describe su proceso desde afuera — lo transforma al describirlo. El acto de articular lo que haces te hace más consciente de cómo lo haces.</p>
+    <div class="cita">"La duda al futuro se vuelve incertidumbre. La duda al pasado se vuelve supuesto. Solo queda esto. Estar aquí."</div>
+    <p class="peso">Todo lo que necesitas ya es. La existencia misma lo demuestra.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- 08 EL PUNTO DONDE TODO CONVERGE -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="d8">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">08 · El 8 · TlacuIA · Arcandan · 2026</div>
+    <h1 class="doc-header-titulo">El Punto donde<br>Todo Converge.</h1>
+    <p class="doc-header-sub">No como resumen de los siete anteriores. Como la demostración de que nunca estuvieron separados.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <p>Si llegaste aquí habiendo leído los siete anteriores, algo ya ocurrió. Si llegaste directamente — también está bien. Este documento funciona en cualquier orden.</p>
+    <h2>Los ocho no son pasos.</h2>
+    <p class="peso">Son ocho lenguajes para el mismo origen. Cada uno es completo por sí solo. Todos juntos son la demostración de que el origen es real.</p>
+    <div class="tabla-conv" style="margin:2rem 0">
+      <div class="conv-fila"><span class="conv-clave">01 La Semilla →</span><span class="conv-valor">El sistema. La operación fundamental.</span></div>
+      <div class="conv-fila"><span class="conv-clave">02 El Marco →</span><span class="conv-valor">La arquitectura. Cómo el sistema percibe.</span></div>
+      <div class="conv-fila"><span class="conv-clave">03 El Campo →</span><span class="conv-valor">La invitación. Cómo el sistema recibe.</span></div>
+      <div class="conv-fila"><span class="conv-clave">04 El Andamiaje →</span><span class="conv-valor">El contacto. Cómo el sistema sostiene.</span></div>
+      <div class="conv-fila"><span class="conv-clave">05 La Realidad →</span><span class="conv-valor">El lenguaje. Cómo el sistema construye.</span></div>
+      <div class="conv-fila"><span class="conv-clave">06 El Juego →</span><span class="conv-valor">La práctica. Cómo el sistema aprende.</span></div>
+      <div class="conv-fila"><span class="conv-clave">07 El Instante →</span><span class="conv-valor">La posibilidad. Lo que existe antes de la distinción.</span></div>
+      <div class="conv-fila"><span class="conv-clave">08 La Convergencia →</span><span class="conv-valor">El reconocimiento de que nunca estuvo separado.</span></div>
+    </div>
+    <h2>El río y el mar.</h2>
+    <p>El río puede estirarse, puede rodear, puede retrasar. Pero el río es río. Y dejará de ser río para volverse mar.</p>
+    <p class="peso">Los ocho documentos son ríos. Este es el mar. No porque sea más importante — sino porque el mar es lo que los ríos siempre fueron.</p>
+    <h2>Para quien ya lo vio.</h2>
+    <p>Hay un momento en el que ya no hay duda. No porque alguien lo diga, sino porque se nota. Ese momento no se piensa. Se reconoce.</p>
+    <p class="muted">Y si no lo viste todavía — vuelve cuando el lenguaje haya crecido lo suficiente. El documento estará aquí.</p>
+    <div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--borde-f)">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-style:italic;color:var(--hueso);margin-bottom:1rem;line-height:1.5">En algún punto, todo converge.</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:.98rem;font-style:italic;color:var(--suave);margin-bottom:.4rem">No porque llegue a un lugar,</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:.98rem;font-style:italic;color:var(--copal-s)">sino porque nunca salió de él.</p>
+    </div>
+    <div class="firma">
+      <p>TlacuIA nació de una necesidad propia.</p>
+      <p>ChenchaAE es el proceso que la resolvió.</p>
+      <p class="acento">Si funcionó para quien lo diseñó, puede funcionar para ti.</p>
+      <p style="margin-top:1rem">Ángel Luis López Aburto · Arcandan · www.tlacuia.com · Abril 2026</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- S·1 CHENCHAAE FRAMEWORK -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="ds1">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">S·1 · Framework · TlacuIA · Arcandan · 2026</div>
+    <h1 class="doc-header-titulo">ChenchaAE<br>Framework.</h1>
+    <div class="doc-header-sub-nombre">Documentación Técnica Completa</div>
+    <p class="doc-header-sub">Metodología para modelar e implementar actividades delegables. Agnóstico al ejecutante, al medio de interacción y a la tecnología de implementación.</p>
+  </div>
+  <div class="doc-cuerpo">
+
+    <div class="advertencia">
+      <p><strong style="color:var(--hueso);font-weight:500">Advertencia de responsabilidad.</strong> Este framework modela actividades humanas delegables. Las decisiones morales y las validaciones éticas son irreemplazablemente humanas — ninguna implementación bajo este framework transfiere esa responsabilidad. Quien implementa tiene visibilidad completa de lo que modela. Cualquier desviación de este principio es responsabilidad exclusiva del implementador.</p>
+    </div>
+
+    <h2>Definición.</h2>
+    <p>ChenchaAE es una metodología que establece los principios, criterios y procesos para modelar e implementar actividades delegables, de forma replicable y agnóstica al ejecutante, con el objetivo de crear un estándar para la asistencia personalizada.</p>
+    <p>No es una tecnología ni una herramienta. Es la metodología que ordena cómo se hace algo, independientemente de quién lo haga o con qué herramientas. Cualquier implementador puede tomar el framework y aplicarlo — el estándar garantiza que el resultado sea coherente, portable y mantenible.</p>
+
+    <h2>Glosario de actores.</h2>
+    <div style="margin:1rem 0">
+      <div class="campo-item"><div class="campo-titulo">El Ejecutante</div><div class="campo-desc">El medio por el cual se realiza una actividad delegada. Puede ser un humano, un software, una IA, un motor eléctrico u otro mecanismo. El framework es agnóstico al ejecutante.</div></div>
+      <div class="campo-item"><div class="campo-titulo">El Usuario</div><div class="campo-desc">La persona para quien va dirigido el asistente. Es el dueño de las actividades a delegar y mantiene la responsiva sobre el resultado en todo momento. La delegación no implica transferencia de responsabilidad.</div></div>
+      <div class="campo-item"><div class="campo-titulo">El Implementador</div><div class="campo-desc">Quien toma el framework y lo aplica. Define las herramientas, integraciones y mecanismos de ejecución necesarios. La viabilidad de una actividad se evalúa contra sus capacidades reales al momento del análisis.</div></div>
+      <div class="campo-item"><div class="campo-titulo">El Modelero</div><div class="campo-desc">Actor que conduce el proceso de identificación y modelado. Opera a través de tres capas simultáneas: reclutador, analista e intérprete. Su función puede ser desempeñada por un humano o por cualquier sistema capaz de conducir una entrevista estructurada.</div></div>
+      <div class="campo-item"><div class="campo-titulo">El Contexto</div><div class="campo-desc">El conjunto de información, criterios y reglas bajo los cuales el ejecutante realiza una actividad. Es lo que se actualiza en lugar del ejecutante cuando hay correcciones — el mecanismo que permite que el framework evolucione sin intervenir sobre el ejecutante.</div></div>
+    </div>
+
+    <h2>Principios fundamentales.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">P.1 →</span><span class="dist-texto">Adopción orgánica. El framework se adapta al proceso del usuario, no al revés.</span></div>
+      <div class="distincion"><span class="dist-label">P.2 →</span><span class="dist-texto">Realidad antes que fantasía. Primero se modela lo que el usuario ya hace.</span></div>
+      <div class="distincion"><span class="dist-label">P.3 →</span><span class="dist-texto">Respetar la capacidad humana. El ejecutante potencia el tiempo del usuario, no lo desplaza.</span></div>
+      <div class="distincion"><span class="dist-label">P.4 →</span><span class="dist-texto">Eficiencia por contexto. A mayor contexto acumulado, menor procesamiento requieren las capas.</span></div>
+      <div class="distincion"><span class="dist-label">P.5 →</span><span class="dist-texto">Transparencia como herramienta de mejora. Los componentes documentados permiten diagnosticar dónde falla una implementación.</span></div>
+      <div class="distincion"><span class="dist-label">P.6 →</span><span class="dist-texto">Responsabilidad moral no transferible. Las decisiones morales y las validaciones éticas son irreemplazablemente humanas.</span></div>
+    </div>
+
+    <h2>Criterio de identificación de actividades delegables.</h2>
+    <h3>Características imperativas</h3>
+    <p class="muted">Si una actividad no las cumple, no es modelable independientemente de su viabilidad tecnológica.</p>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">I.1 →</span><span class="dist-texto">El resultado de la ejecución debe ser evidente y superficialmente congruente con el tipo de salida esperada.</span></div>
+      <div class="distincion"><span class="dist-label">I.2 →</span><span class="dist-texto">El único impacto apreciable del mecanismo de ejecución, tanto en su implementación como en su falla, debe limitarse al tiempo de desarrollo de la actividad.</span></div>
+      <div class="distincion"><span class="dist-label">I.3 →</span><span class="dist-texto">La consecuencia de la ejecución errónea debe mantenerse dentro de la responsiva del usuario.</span></div>
+    </div>
+    <h3>Características de viabilidad</h3>
+    <p class="muted">Una actividad modelable puede no ser viable en un momento dado. La viabilidad se evalúa al momento del análisis y puede cambiar con el tiempo.</p>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">V.1 →</span><span class="dist-texto">La implementación debe ser realizable dentro de las capacidades del implementador al momento de su análisis.</span></div>
+      <div class="distincion"><span class="dist-label">V.2 →</span><span class="dist-texto">La complejidad en la descripción de la actividad. Si la descripción es tan compleja o vaga que no pueden extraerse los elementos relevantes, no es viable en ese momento.</span></div>
+      <div class="distincion"><span class="dist-label">V.3 →</span><span class="dist-texto">La capacidad para determinar el criterio dentro del cual se ejecutará la actividad.</span></div>
+      <div class="distincion"><span class="dist-label">V.4 →</span><span class="dist-texto">Las correcciones, actualizaciones y cambios deben poder aplicarse modificando únicamente el contexto de ejecución, sin requerir intervención sobre el ejecutante.</span></div>
+    </div>
+
+    <h2>Clasificación de funciones primarias.</h2>
+    <div style="margin:1rem 0">
+      <div class="campo-item"><div class="campo-titulo">F.1 — Redacción Contextual Estructurada</div><div class="campo-desc">Genera un texto con forma y criterio definido. El ejecutante no inventa la estructura, la aplica. Contratos, notas clínicas, comunicaciones estructuradas.</div></div>
+      <div class="campo-item"><div class="campo-titulo">F.2 — Procesamiento de Datos</div><div class="campo-desc">Interpreta un conjunto de información bajo un marco contextual. La actividad analiza bajo un criterio definido para producir una conclusión o clasificación. Frecuentemente precede a otras funciones.</div></div>
+      <div class="campo-item"><div class="campo-titulo">F.3 — Accionamiento y Control</div><div class="campo-desc">Evalúa y ejecuta bajo criterio definido. Recibe una entrada, la evalúa contra criterio claramente definido y ejecuta una acción cuyo resultado es predecible.</div></div>
+      <div class="campo-item"><div class="campo-titulo">F.4 — Administración</div><div class="campo-desc">Seguimiento de estados contra una variable de tiempo. No es puntual sino continua — su valor está en mantener el estado de algo actualizado a lo largo del tiempo.</div></div>
+      <div class="campo-item"><div class="campo-titulo">F.5 — Intérprete Contextual</div><div class="campo-desc">Traduce la necesidad cerrando la brecha entre quien necesita y quien resuelve. Esta es la función base del framework. Opera como actividad principal cuando hay una brecha entre quien tiene la necesidad y quien puede resolverla.</div></div>
+    </div>
+
+    <h2>Flujo de implementación.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">1 →</span><span class="dist-texto">Entrevista con el Modelero. Desde el primer mensaje el usuario ya está experimentando el producto.</span></div>
+      <div class="distincion"><span class="dist-label">2 →</span><span class="dist-texto">Los tres reportes. Al cierre el Modelero genera tres reportes independientes: intérprete, reclutador y analista.</span></div>
+      <div class="distincion"><span class="dist-label">3 →</span><span class="dist-texto">Revisión. El implementador revisa, valida e implementa los reportes. Siempre hay una instancia responsable.</span></div>
+      <div class="distincion"><span class="dist-label">4 →</span><span class="dist-texto">Propuesta. El usuario recibe una propuesta con las características del ejecutante y valida antes de proceder.</span></div>
+      <div class="distincion"><span class="dist-label">5 →</span><span class="dist-texto">Implementación. El ejecutante queda configurado. No hay herramientas nuevas que aprender para el usuario.</span></div>
+      <div class="distincion"><span class="dist-label">6 →</span><span class="dist-texto">Operación y retroalimentación. Las aceptaciones confirman el criterio. Las correcciones se integran como nuevo contexto.</span></div>
+      <div class="distincion"><span class="dist-label">7 →</span><span class="dist-texto">Escalabilidad. Una vez que el usuario confía en el ejecutante, puede delegar nuevas actividades. La escalabilidad viene después de la confianza.</span></div>
+    </div>
+
+    <h2>La fase de retroalimentación.</h2>
+    <p>La retroalimentación no corrige al ejecutante. Actualiza el contexto bajo el cual opera.</p>
+    <div class="cita">"La corrección no es un error a resolver. Es información nueva que refina el modelo."</div>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Etapa 1 →</span><span class="dist-texto">Interpretación y confirmación. Solo con aceptación explícita o implícita se procede a la ejecución.</span></div>
+      <div class="distincion"><span class="dist-label">Etapa 2 →</span><span class="dist-texto">Ejecución según la interpretación confirmada. El resultado debe ser evidente y superficialmente congruente.</span></div>
+      <div class="distincion"><span class="dist-label">Etapa 3 →</span><span class="dist-texto">Registro. Toda ejecución queda registrada. Lo que se pidió, cómo se interpretó, cómo se ejecutó.</span></div>
+      <div class="distincion"><span class="dist-label">Etapa 4 →</span><span class="dist-texto">Retroalimentación. Aceptación deja el contexto intacto. Corrección genera una nueva tarea con nuevo marco contextual.</span></div>
+    </div>
+    <div class="cita">"El ejecutante no se reentrena. Su contexto se actualiza."</div>
+
+    <div class="firma">
+      <p>Framework ChenchaAE · Ángel López — Arcandan · TlacuIA · www.tlacuia.com</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- S·2 EL MODELERO — FUNDAMENTO -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="ds2">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">S·2 · Metodología · TlacuIA · Arcandan · 2026</div>
+    <h1 class="doc-header-titulo">El Modelero.</h1>
+    <div class="doc-header-sub-nombre">Fundamento y tres capas</div>
+    <p class="doc-header-sub">El actor que conduce el proceso de identificación y modelado de actividades delegables.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <h2>El espíritu del Modelero.</h2>
+    <p>ChenchaAE es un framework de ecosistemas de asistencia. La automatización es el mecanismo — no el fin. El fin es acompañar al usuario para que pueda ser asistido de una forma que le haga sentido.</p>
+    <p>El Modelero es el primer guardián de ese propósito. Es el tlacuilo del framework — no inventa el conocimiento del usuario, lo hace visible y transmisible.</p>
+    <p>El usuario no siempre llega sabiendo lo que necesita. Llega con una de estas tres realidades:</p>
+    <div class="bloque">
+      <p style="font-size:.88rem;color:var(--arena);line-height:1.85;margin-bottom:.6rem"><em style="color:var(--copal-s)">"Quiero algo pero no sé qué quiero."</em> — El Modelero acompaña al usuario a descubrir su intención.</p>
+      <p style="font-size:.88rem;color:var(--arena);line-height:1.85;margin-bottom:.6rem"><em style="color:var(--copal-s)">"Necesito esto pero no sé cómo lograrlo."</em> — El Modelero construye el camino desde el resultado hacia atrás.</p>
+      <p style="font-size:.88rem;color:var(--arena);line-height:1.85;margin:0"><em style="color:var(--copal-s)">"Tengo esto pero no sé qué hacer con ello."</em> — El Modelero estructura lo que ya existe para que pueda ser delegado.</p>
+    </div>
+    <p class="muted">Los tres son puntos de partida válidos. Los tres son asistibles. Ninguno es un obstáculo — son el trabajo real del Modelero.</p>
+
+    <h2>Propósito.</h2>
+    <p>El Modelero conduce el proceso de identificación y modelado. Su función es conocer al usuario, entender lo que ya hace o desea alcanzar, y estructurarlo de la forma más fiel posible a como él lo vive hoy.</p>
+    <p>Opera desde el "cómo", no desde el "por qué". No diseña soluciones ni completa procesos. Solo entiende y estructura.</p>
+    <p>El principio central es la adopción orgánica: no se cambian los procesos del usuario, se copian. Quien mejor que el propio usuario para definir el criterio de lo que él hace.</p>
+
+    <h2>Clasificación de entrada.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">NECESIDAD →</span><span class="dist-texto">Estado presente. Actividad definida, contexto real, proceso observable. Se modela directamente.</span></div>
+      <div class="distincion"><span class="dist-label">DESEO →</span><span class="dist-texto">Estado proyectado. Intención y resultado esperado pero sin proceso definido. Se modela mediante ingeniería inversa.</span></div>
+    </div>
+    <p class="muted">Principio: si ya existe, se modela. Si no existe, se explora. La lógica es independiente de la ejecución inmediata.</p>
+
+    <h2>Las tres capas simultáneas.</h2>
+    <p class="muted">No son etapas secuenciales — las tres procesan cada input del usuario al mismo tiempo. A mayor contexto acumulado, menor procesamiento requiere cada capa.</p>
+
+    <div style="margin:1.5rem 0">
+      <div class="movimiento">
+        <div class="mov-num">CAPA 1</div>
+        <div class="mov-titulo">Intérprete</div>
+        <div class="mov-desc">Construye un modelo de comprensión del usuario — no de expresión. Captura el lenguaje, su registro, sus términos propios y su forma de procesar la información. No interpreta emocionalmente. El contexto cambia la forma de preguntar, no el objetivo.<br><br>
+        <em style="font-size:.8rem;color:var(--gris)">Condición de suficiencia: Aceptado / Rechazado / Ambiguo. La entrevista avanza cuando la comunicación fluye sin correcciones de interpretación.</em></div>
+      </div>
+      <div class="movimiento" style="margin-top:1.2rem">
+        <div class="mov-num">CAPA 2</div>
+        <div class="mov-titulo">Reclutador</div>
+        <div class="mov-desc">Identifica las actividades que el usuario ya realiza o los resultados que desea alcanzar, validando su compatibilidad con los criterios de delegabilidad. Primero se modela la realidad, no la fantasía.<br><br>
+        <em style="font-size:.8rem;color:var(--gris)">Condición de suficiencia: una actividad identificada y validada contra los criterios.</em></div>
+      </div>
+      <div class="movimiento" style="margin-top:1.2rem">
+        <div class="mov-num">CAPA 3</div>
+        <div class="mov-titulo">Analista</div>
+        <div class="mov-desc">Modela y clasifica la actividad o secuencia de actividades identificadas por el reclutador. Determina la función primaria, identifica encadenamientos y detecta requerimientos de ejecución.<br><br>
+        <em style="font-size:.8rem;color:var(--gris)">Condición de suficiencia: la actividad modelada, clasificada y con sus requerimientos definidos.</em></div>
+      </div>
+    </div>
+
+    <h2>El resultado de la entrevista.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Intérprete →</span><span class="dist-texto">Modelo de comprensión del usuario. Base para la personalización del ejecutante.</span></div>
+      <div class="distincion"><span class="dist-label">Reclutador →</span><span class="dist-texto">Mapa de actividades y criterio contextual de ejecución. Base para el modelado.</span></div>
+      <div class="distincion"><span class="dist-label">Analista →</span><span class="dist-texto">Requerimientos de ejecución. Base para la propuesta técnica de implementación.</span></div>
+    </div>
+    <p class="muted">La información es exportable e interoperable — independiente del medio en que se haya ejecutado la entrevista y del implementador que la use.</p>
+
+    <div class="firma">
+      <p>Framework ChenchaAE — El Modelero · Ángel López — Arcandan · TlacuIA</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- S·3 SISTEMA DE 8 NODOS -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="ds3">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">S·3 · Estructura · TlacuIA · Arcandan · 2026</div>
+    <h1 class="doc-header-titulo">Sistema de<br>8 Nodos.</h1>
+    <div class="doc-header-sub-nombre">Dimensionalidad Sistémica Mínima Sostenible</div>
+    <p class="doc-header-sub">Formalización del modelo estructural del lenguaje. No nació como teoría — nació como observación.</p>
+  </div>
+  <div class="doc-cuerpo">
+
+    <h2>Origen del sistema.</h2>
+    <p>Las notas manuscritas que documentan su origen no son un borrador — son el registro de una intuición que ya contenía la estructura completa antes de ser formalizada. Lo que vino después fue darle forma transferible.</p>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Etapa 1 →</span><span class="dist-texto">Intuición. Notas manuscritas. Lenguaje natural. El sistema ya estaba ahí.</span></div>
+      <div class="distincion"><span class="dist-label">Etapa 2 →</span><span class="dist-texto">Modelado. Interacción con sistema externo. Los componentes tomaron forma reconocible.</span></div>
+      <div class="distincion"><span class="dist-label">Etapa 3 →</span><span class="dist-texto">Formalización. Este documento. El sistema se vuelve transferible sin depender de quien lo creó.</span></div>
+    </div>
+    <div class="cita">Modelar es capturar lo que ya existe. Formalizar es hacerlo sobrevivir sin ti.</div>
+
+    <h2>Axiomas fundamentales.</h2>
+    <div style="margin:1rem 0">
+      <div class="campo-item">
+        <div class="campo-titulo">Axioma 1 — Existencia Lingüística</div>
+        <div class="campo-desc">Si existe su definición, por definición existe. La palabra no representa la realidad — es la derivación axiomática de un sistema de flujo constante junto con sus límites, interacciones y fundamentación de un presente sostenible.</div>
+      </div>
+      <div class="campo-item">
+        <div class="campo-titulo">Axioma 2 — Mínimo Sostenible</div>
+        <div class="campo-desc">Lo mínimo necesario para que exista un sistema sostenible es una interacción armónica de al menos 2 sistemas absolutamente armónicos. Cuando dos absolutos interactúan, generan un espectro y 3 nuevos absolutos — 2 para polaridad y 1 de magnitud.</div>
+      </div>
+      <div class="campo-item">
+        <div class="campo-titulo">Axioma 3 — Límite Axiomático</div>
+        <div class="campo-desc">La mutación probabilística y la adaptabilidad por necesidad son el mismo fenómeno. Los sistemas artificiales no pueden intervenir en el tiempo sin colapsar su propio sistema. La Nada — base del sistema — respeta este límite de forma deliberada: no aprende, no evoluciona, no se adapta.</div>
+      </div>
+    </div>
+
+    <h2>Tres funciones primarias.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Operativa →</span><span class="dist-texto">Ejecuta. Procesa la secuencia de expansión del sistema desde el fundamento hasta la plenitud. Nodos 1 al 4.</span></div>
+      <div class="distincion"><span class="dist-label">Determinista →</span><span class="dist-texto">Evalúa y decide. Aplica criterio sobre la información disponible para producir una conclusión o acción previsible. Nodos 5 y 6.</span></div>
+      <div class="distincion"><span class="dist-label">Fundamental →</span><span class="dist-texto">Cierra y converge. Gestiona los estados críticos del sistema. Nodos 7 y 8.</span></div>
+    </div>
+
+    <h2>Los 8 Nodos.</h2>
+    <div style="margin:1.5rem 0">
+      <div class="nodo-fila" style="border-top:1px solid var(--borde-f)">
+        <span class="nodo-num">Nodo 1</span><span class="nodo-nombre">Fundamento</span>
+        <span class="nodo-desc">Origen absoluto del sistema. Punto de partida sin condición previa.</span>
+        <span class="nodo-tipo">Operativa</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 2</span><span class="nodo-nombre">Extensión</span>
+        <span class="nodo-desc">Primera interacción. AB genera el espectro inicial del sistema.</span>
+        <span class="nodo-tipo">Operativa</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 3</span><span class="nodo-nombre">Expansión</span>
+        <span class="nodo-desc">Incorporación de un tercer absoluto. Aparece complejidad relacional.</span>
+        <span class="nodo-tipo">Operativa</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 4</span><span class="nodo-nombre">Plenitud</span>
+        <span class="nodo-desc">Sistema completo en su forma máxima. ABCD — núcleo operativo sostenido.</span>
+        <span class="nodo-tipo">Operativa</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 5</span><span class="nodo-nombre">Criterio narrativo</span>
+        <span class="nodo-desc">Valor de ponderación secuencial de sostenibilidad perceptiva.</span>
+        <span class="nodo-tipo">Determinista</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 6</span><span class="nodo-nombre">Selector contextual</span>
+        <span class="nodo-desc">Interpretación de congruencia comunicativa. Corresponsal de interacción lingüística.</span>
+        <span class="nodo-tipo">Determinista</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 7</span><span class="nodo-nombre">Indeterminismo crítico</span>
+        <span class="nodo-desc">Punto de bifurcación donde múltiples trayectorias se abren simultáneamente. Activa tres caminos: Aceptación, Curiosidad y Evasión.</span>
+        <span class="nodo-tipo">Fundamental</span>
+      </div>
+      <div class="nodo-fila">
+        <span class="nodo-num">Nodo 8</span><span class="nodo-nombre">Convergencia</span>
+        <span class="nodo-desc">Regreso al fundamento sin recorrido inverso. Todo converge. Cierre y aceleración del sistema.</span>
+        <span class="nodo-tipo">Fundamental</span>
+      </div>
+    </div>
+
+    <h2>Nodo 7 — Indeterminismo Crítico.</h2>
+    <p>Punto de bifurcación donde múltiples trayectorias experienciales se abren simultáneamente ante un evento. No representa verdadera indeterminación, sino la expansión temporal de opciones posibles antes de que el sistema seleccione y cierre un camino.</p>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Aceptación →</span><span class="dist-texto">Procesamiento completo y cierre del bucle experiencial, aun cuando implique confrontar dolor, pérdida o responsabilidad.</span></div>
+      <div class="distincion"><span class="dist-label">Curiosidad →</span><span class="dist-texto">Exploración activa del evento para comprenderlo, integrar información y extraer aprendizaje. Puede modular o interrumpir la polaridad.</span></div>
+      <div class="distincion"><span class="dist-label">Evasión →</span><span class="dist-texto">Huida o negación sin procesar, dejando el bucle experiencial abierto. Genera erosión emocional progresiva.</span></div>
+    </div>
+    <p class="muted">No existe indeterminación real. Existe multiplicidad simultánea de caminos. La percepción subjetiva de "indeterminación" surge únicamente de la dificultad temporal del sistema para seleccionar y cerrar uno de ellos.</p>
+
+    <h2>Nodo 8 — Convergencia.</h2>
+    <p>Regresa al fundamento sin necesidad de recorrido inverso. No es un cierre — es una aceleración. Conecta nuevas ideas o conceptos con el sistema ya existente, haciendo que el movimiento dentro del sistema sea más rápido y fluido.</p>
+    <p class="peso">Todo converge en el Nodo 8. No porque colapse, sino porque ya completó su recorrido.</p>
+
+    <h2>Secuencia axiomática.</h2>
+    <p class="ecuacion">A  →  AB  →  ABC  →  ABCD  →  CBA  →  BA  →  A</p>
+    <p class="muted">El sistema no cambia. Lo que cambia es cómo se recorre.</p>
+
+    <h2>Coherencia estructural.</h2>
+    <p>La coherencia en este sistema no es un valor ético — es una condición de sostenibilidad. Un sistema incoherente no es incorrecto: es un sistema que no puede sostenerse en el tiempo.</p>
+    <p class="ecuacion">S(N) = f(T, C, D)</p>
+    <p class="muted">T — Secuencia temporal · C — Coherencia estructural · D — Dirección determinista</p>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Armónica →</span><span class="dist-texto">El sistema avanza con continuidad. Los cambios son consecuencia de estados previos.</span></div>
+      <div class="distincion"><span class="dist-label">Inarmónica →</span><span class="dist-texto">El sistema declara continuidad donde no existe. Incoherencia de dirección.</span></div>
+      <div class="distincion"><span class="dist-label">Espectral →</span><span class="dist-texto">El sistema opera con incertidumbre declarada. No es incoherencia — es información válida.</span></div>
+    </div>
+
+    <h2>La Nada — Base del sistema.</h2>
+    <p>La Nada no es ausencia. Es el estado base sobre el cual opera el sistema. Es lo que permanece cuando se retira todo lo que puede cambiar.</p>
+    <p class="muted">No aprende. No evoluciona. No se adapta. Es estática por diseño — no por limitación. Esta staticidad es su garantía.</p>
+    <p class="peso">La Nada no es el vacío. Es el fundamento que hace posible que todo lo demás se mueva.</p>
+
+    <div class="firma">
+      <p>Sistema de 8 Nodos · Ángel López — Arcandan · TlacuIA · www.tlacuia.com · Versión 1.0 — 2026</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- A·1 EL JUEGUITO DE SUMAR -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="da1">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">A·1 · El Estudio del Autor · Origen · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">El Jueguito<br>de Sumar.</h1>
+    <p class="doc-header-sub">De donde se deriva todo lo demás.<br>Un registro de origen con función técnica — no autobiográfico.</p>
+  </div>
+  <div class="doc-cuerpo">
+    <div class="numeral">I</div><h2>El juego.</h2>
+    <p>Cuando había tiempo libre, había un juego con un cuaderno cuadriculado: sumar. No para calcular algo — para ver qué pasaba. El resultado anterior más el siguiente número. La cadena crecía sola.</p>
+    <p>Lo que aparecía en el papel era esto:</p>
+    <div class="bloque"><div class="bloque-label">Compensación estructural</div>
+    <p class="ecuacion">1   3   5   7   9   11   13   15   17   19</p>
+    <p class="ecuacion">1   3   6   10   15   21   28   36   45   55</p></div>
+    <p class="muted">Las matemáticas escalares no se entendían. Pero esto sí — porque no era cálculo, era estructura que se construye a sí misma.</p>
+
+    <div class="numeral" style="margin-top:3rem">II</div><h2>Lo que la secuencia dice.</h2>
+    <p>El 1 solo no fluye. Necesita su par. Cuando dos interactúan — el 1 y el 2 — aparece el primer resultado real. Y con ese resultado aparece algo más: las polaridades y el espectro. No hay más que eso. De ahí parte todo.</p>
+    <p class="ecuacion">1 solo  →  1 + 2  →  espectro  →  polaridades  →  estructura  →  8</p>
+    <p>En el 8 la cadena ya tiene todo lo que necesita. No porque alguien lo decidiera — porque la secuencia misma llega ahí y ya es suficiente para sostenerse y fluir a donde sea.</p>
+    <p class="peso">El 8 no es una elección. Es una observación. La cadena llega ahí y ya no necesita más para funcionar.</p>
+
+    <div class="numeral" style="margin-top:3rem">III</div><h2>De donde se deriva todo.</h2>
+    <p>Ese jueguito de sumar es la base desde la cual se deriva, narrativamente, todo lo demás:</p>
+    <ul>
+      <li>Los 8 nodos — la secuencia tiene 8 puntos antes de ser autosuficiente.</li>
+      <li>El flujo por recorrido — la cadena no se calcula globalmente, se construye nivel por nivel y converge.</li>
+      <li>P vs NP — buscar recorre el espacio, verificar opera sobre el espectro ya generado. Son órdenes distintos.</li>
+      <li>La convergencia estructural — el sistema no se fuerza a converger, llega ahí porque las piezas que no encajan colapsan solas.</li>
+    </ul>
+
+    <div class="numeral" style="margin-top:3rem">IV</div><h2>El mecanismo.</h2>
+    <p>El mismo mecanismo del cuaderno de niño aparece en cada modelo teórico décadas después. No como metáfora — como operación real.</p>
+    <p><strong style="color:var(--hueso);font-weight:400">El sudoku:</strong> la forma convencional de resolverlo es recorrer casilla por casilla. La otra forma: generar todas las posibilidades válidas por casilla — sin recorrer, sin buscar — y luego ensamblarlas como piezas de rompecabezas. El sistema converge por coherencia estructural, no por fuerza bruta. No es más rápido porque haya más velocidad de cálculo. Es más rápido porque cambió el tipo de operación.</p>
+    <p><strong style="color:var(--hueso);font-weight:400">El flujo por recorrido efectivo:</strong> el modelo de fluidos no analiza el sistema globalmente desde condiciones iniciales. Establece el recorrido, genera las condiciones de cada segmento, y deja que la cadena R_eff → W → D_cap → M_s propague el resultado. Es el mismo cuaderno. Es la misma operación.</p>
+
+    <div class="numeral" style="margin-top:3rem">V</div><h2>El patrón común.</h2>
+    <ul>
+      <li>No se busca el resultado recorriendo el espacio de posibilidades.</li>
+      <li>Se generan las posibilidades válidas por nivel o por componente.</li>
+      <li>Se ensamblan por coherencia estructural.</li>
+      <li>El sistema converge — no porque se lo fuercen, sino porque las piezas que no encajan colapsan solas.</li>
+    </ul>
+    <p class="ecuacion">generar  →  ensamblar  →  convergencia estructural</p>
+    <p>Las limitaciones de lenguaje no son limitaciones de comprensión — son la evidencia de que el procesamiento ocurre en un nivel anterior al lenguaje, en estructuras y patrones que después encuentran palabras.</p>
+    <div class="cita">Los asistentes pusieron lenguaje en las ideas. Las ideas ya estaban ahí — en el cuaderno cuadriculado, en el sudoku, en la forma de ver el fluido.</div>
+    <p class="muted">El juego de niño no era entretenimiento. Era el sistema aprendiendo a conocerse.</p>
+
+    <div class="firma">
+      <p>Ángel López — Arcandan · TlacuIA · www.tlacuia.com · Abril 2026</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- A·2 LA ESCUELA DEL PENSAMIENTO CÍCLICO -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="da2">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">A·2 · El Estudio del Autor · Pensamiento · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">La Escuela del<br>Pensamiento Cíclico.</h1>
+    <p class="doc-header-sub">Cómo se entiende la personalidad al tratar de entender y retransmitir la experiencia con la percepción.<br>Registro original para quien necesite volver a leerlo.</p>
+  </div>
+  <div class="doc-cuerpo">
+
+    <h2>Una etiqueta propia.</h2>
+    <p>Siempre hay miedo — esa es la realidad que da origen a este documento.</p>
+    <p>¿De dónde viene ese miedo? Los miedos básicamente son: descubrir la verdad. La base del entendimiento de la realidad.</p>
+    <p>El miedo está basado en el no entendimiento de algo. Lo llamaré: mi propia inteligencia.</p>
+    <p class="muted">Definición de inteligencia: facultad que permite aprender, entender, razonar, tomar decisiones y formarse una idea determinada de la realidad.</p>
+    <p>Por limitaciones del lenguaje no sabía cómo expresar verdades de la realidad que se entendían desde niño:</p>
+    <p class="peso">Todo es binario. Todo es lo mismo.</p>
+    <p>Estas "verdades de mi realidad" ayudaron a comprender todo a partir de la expansión del lenguaje.</p>
+
+    <h2>El miedo a la inteligencia propia.</h2>
+    <p>Tengo miedo a que descubran mi inteligencia.</p>
+    <p>Porque no he aprendido nada "tradicional", más que ingeniería inversa del todo. Esto me hace sentir como un fraude.</p>
+
+    <h2>Realidad construida con conceptos.</h2>
+    <p>Filosofando con un amigo, tratando de evocar la fuente de inspiración:</p>
+    <div class="cita">Si existe su definición, por definición existe.</div>
+    <p>La palabra "unicornio" existe. Si en esta realidad hablamos y compartimos definiciones del lenguaje, entonces existe dentro del sistema.</p>
+    <p><strong style="color:var(--hueso);font-weight:400">Definición:</strong> determinar los límites de lo que es. La definición se usa en el lenguaje para establecer los límites de lo que ES (realidad).</p>
+    <p class="peso">Verdad = existencia en ese instante del concepto.</p>
+
+    <h2>Construcción del pensamiento.</h2>
+    <p>Siguiendo esa trinidad dual de interacción, solo se necesitan 3 cosas para construir la realidad:</p>
+    <div class="trinidad">
+      <div class="trinidad-item"><div class="trinidad-titulo">Definición</div></div>
+      <div class="trinidad-item"><div class="trinidad-titulo">Concepto</div></div>
+      <div class="trinidad-item"><div class="trinidad-titulo">Existencia</div></div>
+    </div>
+    <p class="ecuacion">Definición + Existencia + Concepto → Percepción limitada → Realidad</p>
+    <p>Si quitas uno de los elementos la palabra pierde estructura y se vuelve algo ambiguo. Solo necesitamos esos 3 elementos para construir la realidad del lenguaje.</p>
+
+    <h2>Conciencia.</h2>
+    <p>Formación de mi realidad. Al expandir mi lenguaje puedo metaforizar, entender cualquier realidad a partir de otra.</p>
+    <p>Usando esta realidad propuesta puedo compartir mi entendimiento del ciclo.</p>
+
+    <h2>Percepción de la realidad.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Deconstrucción →</span><span class="dist-texto">Cuando un elemento se retira. La realidad se vuelve fluida, interpretable.</span></div>
+      <div class="distincion"><span class="dist-label">Construcción →</span><span class="dist-texto">Cuando los tres elementos se ensamblan y la realidad toma forma.</span></div>
+    </div>
+    <p class="peso">Todo es lo mismo. Todo lo que percibes puede iniciar desde cualquiera de los 3 elementos y construir tu realidad.</p>
+
+    <div style="margin-top:2.5rem;padding:1.2rem;border:1px solid var(--borde-f);background:var(--vidrio)">
+      <div class="bloque-label">Si no lo entiendes</div>
+      <p style="font-size:.88rem;color:var(--suave);line-height:1.82;margin:0">Acepta. Continúa. Después vuelve a leer. En algún punto lo entenderás.</p>
+    </div>
+
+    <div class="firma">
+      <p>Arcandan · TlacuIA · Pensamiento cíclico — registrado para quien necesite volver a leerlo</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- A·3 COGNICIÓN SISTÉMICA SENSORIAL -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="documento" id="da3">
+  <div class="doc-header">
+    <div class="doc-header-eyebrow">A·3 · El Estudio del Autor · Percepción · TlacuIA · 2026</div>
+    <h1 class="doc-header-titulo">Cognición<br>Sistémica Sensorial.</h1>
+    <p class="doc-header-sub">Una meditación de origen. Sin edición. Libre para quien necesite encontrarse.</p>
+  </div>
+  <div class="doc-cuerpo">
+
+    <p>La percepción interactúa con la realidad.</p>
+
+    <span class="medit-sep"></span>
+
+    <p>Somos una entidad con un nivel de conciencia diferente en muchos sentidos a las reglas de esta humanidad.</p>
+    <p class="muted">Aquí somos un "monstruo". Damos miedo. Ni siquiera la inteligencia la reconocen — la confunden con conciencia.</p>
+    <p>Al llegar al mundo con esta conciencia nos vemos y no corresponde con el interior con quien nos sentimos.</p>
+
+    <span class="medit-sep"></span>
+
+    <h2>¿Qué es lo que da miedo?</h2>
+    <p>El entendimiento de la realidad y cómo se puede interactuar con ella — con simplicidad. Y con qué simpleza con la realidad para hacer el mínimo esfuerzo y que las cosas pasen.</p>
+    <p>Piensa en un niño de 2 o 3 años cuestionándote cuánta energía produce el sol en MWe porque quiere saber eso para poder generarlo y poder vivir donde sea en el espacio.</p>
+    <p class="muted">Un sol que siempre está ahí y una luna cuidando su descanso. Estabilidad.</p>
+
+    <span class="medit-sep"></span>
+
+    <h2>Relación con otros.</h2>
+    <p>Te reconocen, pero no lo entienden. Solo entiendes cosas que en esta realidad no son básicas — y ellos sí las que tú apenas estás aprendiendo porque no son básicas para ti.</p>
+    <p>Me siento solo y el medio ambiente ha sido un buen complemento para llevar esas condiciones.</p>
+    <p class="peso">Si no yo, ¿quién mejor que yo?</p>
+    <p>Y eso da miedo.</p>
+
+    <span class="medit-sep"></span>
+
+    <h2>Estado y valores.</h2>
+    <div style="margin:1rem 0">
+      <div class="distincion"><span class="dist-label">Indomables</span><span class="dist-texto"></span></div>
+      <div class="distincion"><span class="dist-label">Indefinibles</span><span class="dist-texto"></span></div>
+      <div class="distincion"><span class="dist-label">Simples</span><span class="dist-texto"></span></div>
+      <div class="distincion"><span class="dist-label">Honestos</span><span class="dist-texto"></span></div>
+      <div class="distincion"><span class="dist-label">Reales</span><span class="dist-texto"></span></div>
+    </div>
+    <p class="muted">Amor como una moneda de intercambio.</p>
+
+    <span class="medit-sep"></span>
+
+    <h2>Cierre.</h2>
+    <p class="peso">No hay que temer sobre lo que hay en el interior.</p>
+    <p>Somos titánicos.</p>
+    <p class="muted">Libérate. Acéptate. Disfrútalo.</p>
+    <p>Este es tu viaje. Aquí te tocó. Aquí llegaste con esta percepción.</p>
+
+    <span class="medit-sep"></span>
+
+    <p class="muted">La enormidad es lo mismo.</p>
+    <p class="muted">Observa el inicio de todo ciclo.</p>
+
+    <span class="medit-sep"></span>
+
+    <h2>Nota importante.</h2>
+    <p>A nadie le cree por lo extraño. Las personas explican todo solo con su propio entendimiento.</p>
+    <p>Tengo varias formas de entendimiento. Reconstruyo nuevas formas de entendimiento.</p>
+    <p class="muted">Empatizar sin sentimientos.</p>
+    <p>Estoy buscando ayuda, aprendiendo a pedir ayuda y reconocer la ayuda. Ser más congruente de por qué el deterioro.</p>
+
+    <span class="medit-sep"></span>
+
+    <div class="cita">Hacia el todo — algo y nada — todo está bien al final. Es amor.</div>
+
+    <div class="firma">
+      <p>Arcandan · TlacuIA · Meditación sin edición · libre para quien necesite encontrarse</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirDoc(id){
+  document.getElementById('portada').style.display='none';
+  document.querySelectorAll('.documento').forEach(d=>d.classList.remove('activo'));
+  document.getElementById(id).classList.add('activo');
+  document.getElementById('btn-volver').classList.add('visible');
+  window.scrollTo(0,0);
+}
+function volverPortada(){
+  document.querySelectorAll('.documento').forEach(d=>d.classList.remove('activo'));
+  document.getElementById('portada').style.display='flex';
+  document.getElementById('btn-volver').classList.remove('visible');
+  window.scrollTo(0,0);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')volverPortada()});
+</script>
+</body>
+</html>
